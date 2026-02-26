@@ -3,11 +3,12 @@ provider "aws" {
   
 }
 
-resource "aws_instance" "server" {
-    count = 3
+resource "aws_instance" "server" { 
+
+  count = 3
   ami = "ami-051a31ab2f4d498f5"
   instance_type = "c7i-flex.large"
-  security_groups = "sg-0d9bbcd4e65b3ed2d"
+  vpc_security_group_ids = ["sg-0d9bbcd4e65b3ed2d"]
   tags = {
     Name = var.instance_name[count.index]
   }
