@@ -1,0 +1,48 @@
+pipeline{
+    agent any
+    tools{
+        maven "maven"
+    }
+    stages{
+        stage("code"){
+            steps{
+                git branch: '$branch', url: 'https://github.com/RAHAMSHAIK007/jenkins-java-project.git'
+            }
+        }
+        stage("Build"){
+            steps{
+                sh "mvn compile"
+            }
+        }
+        stage("test"){
+            steps{
+                sh "mvn test"
+            }
+        }
+        stage("Sonarqube"){
+            steps{
+                echo 'my code is passed Sonarqube test'
+            }
+        }
+        stage("Quality Gates"){
+            steps{
+                echo 'my code is passed Quality Gates'
+            }
+        }
+        stage("Artifacts"){
+            steps{
+                sh "mvn package"
+            }
+        }
+        stage("S3"){
+            steps{
+                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'artifact-store01', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: false, noUploadOnFailure: false, selectedRegion: 'ap-south-1', showDirectlyInBrowser: false, sourceFile: 'target/NETFLIX-1.2.2.war', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'ritesh', userMetadata: []
+            }
+        }
+        stage("deploy"){
+            steps{
+                ansiblePlaybook credentialsId: 'd1f53cda-1111-4f5f-bc28-94770dddae28', disableHostKeyChecking: true, installation: 'ansible', inventory: '/etc/ansible/hosts', limit: '$server', playbook: '/etc/ansible/deploy.yml', vaultTmpPath: ''
+            }
+        }
+    }
+}
