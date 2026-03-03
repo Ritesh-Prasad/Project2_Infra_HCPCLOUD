@@ -1,0 +1,6 @@
+- hosts: all
+  tasks:
+    - name: copying artifacts
+      copy:
+        src: /var/lib/jenkins/workspace/Project2/target/NETFLIX-1.2.2.war
+        dest: /root/tomcat/webapps/
